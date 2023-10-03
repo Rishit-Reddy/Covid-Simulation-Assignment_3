@@ -18,27 +18,36 @@ def sample_creation(countries_csv_name, countries, sample_ratio):
     # Initialize a dictionary to store sample size
 
     # Reading CSV File
-    df = pd.read_csv(countries_csv_name)
+    df = pd.read_csv(countries_csv)
+
+    # Filter by countries
+    country_specific_df = df[df['country'].isin(countries)]
+    final_sample = []
+
+    for index, row in country_specific_df.iterrows():
+        sample_data = []
+
+        sample_size = int(row['population'] / sample_ratio)
+
+        temp_dict = dict()
 
 
-    # Filter by contries
+        temp_dict['less_5'] = int((row['less_5'] * sample_size) / 100)
+        temp_dict['5_to_14'] = int((row['5_to_14'] * sample_size) / 100)
+        temp_dict['15_to_24'] = int((row['15_to_24'] * sample_size) / 100)
+        temp_dict['25_to_64'] = int((row['25_to_64'] * sample_size) / 100)
+        temp_dict['over_65'] = int((row['over_65'] * sample_size) / 100)
 
-    s_df = df[df['country'].isin(countries)]
-    s_df['sample_population'] = (s_df['population'] / sample_ratio).astype(int)
-    s_df['s_less_5'] = (s_df['sample_population'] * s_df['less_5'] / 100).astype(int)
-    s_df['s_5_to_14'] = (s_df['sample_population'] * s_df['5_to_14'] / 100).astype(int)
-    s_df['s_15_to_24'] = (s_df['sample_population'] * s_df['15_to_24'] / 100).astype(int)
-    s_df['s_25_to_64'] = (s_df['sample_population'] * s_df['25_to_64'] / 100).astype(int)
-    s_df['s_over_65'] = (s_df['sample_population'] * s_df['over_65'] / 100).astype(int)
-    s_df=s_df.drop(['population','median_age'],axis=1)
-    s_df['person_id']=0
-    s_df.set_index('person_id',drop=False)
-
-
+        sample = []
+        for age_group,value in temp_dict.items():
+            sample_dict = {'person_id': [0] * value, 'age_group_name': [], 'country': []}
+            sample_dict['age_group_name'].extend(age_group * value)
+            sample_dict['country'].extend([row['country']] * value)
+            sample.append(sample_dict)
 
 
-    return s_df
-    
+        final_sample.append(sample)
+    return final
 
 
 def run(countries_csv_name, countries, sample_ratio, start_date, end_date):
