@@ -2,9 +2,6 @@
 import pandas as pd
 import random
 
-import pandas as pd
-import random
-
 def create_sample_dataframe():
     # Initialize an empty DataFrame
     sample_df = pd.DataFrame(columns=['person_id', 'age_group_name', 'country'])
