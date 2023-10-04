@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from helper import create_plot
 from sim_parameters import TRASITION_PROBS, HOLDING_TIMES
+from timeseries import create_timeseries
 
 #Can this be a seperate module? Just to escape plagiarism
 def sample_creation(countries_csv_name, countries, sample_ratio):
@@ -42,11 +43,14 @@ def sample_creation(countries_csv_name, countries, sample_ratio):
             
             temp_list = [{"person_id":0, "age_group_name":age_group, "country": row['country']} for _ in range(value)]
             sample_population = pd.concat([sample_population, pd.DataFrame(temp_list)], ignore_index=True)
+
     return sample_population
 
 
 def run(countries_csv_name, countries, sample_ratio, start_date, end_date):
     sample_population = sample_creation(countries_csv_name, countries, sample_ratio)
-    print(sample_population)
+    timeseries = create_timeseries(sample_population, start_date, end_date)
+
+    print(timeseries)
 
 
