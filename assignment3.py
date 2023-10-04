@@ -18,39 +18,35 @@ def sample_creation(countries_csv_name, countries, sample_ratio):
     # Initialize a dictionary to store sample size
 
     # Reading CSV File
-    df = pd.read_csv(countries_csv)
+    df = pd.read_csv(countries_csv_name)
 
     # Filter by countries
     country_specific_df = df[df['country'].isin(countries)]
-    final_sample = []
+    
+
+    columns_list = ['person_id', 'age_group_name', 'country']
+    sample_population = pd.DataFrame(columns=columns_list)
 
     for index, row in country_specific_df.iterrows():
-        sample_data = []
-
-        sample_size = int(row['population'] / sample_ratio)
-
         temp_dict = dict()
 
-
+        sample_size = int(row['population'] / sample_ratio)
         temp_dict['less_5'] = int((row['less_5'] * sample_size) / 100)
         temp_dict['5_to_14'] = int((row['5_to_14'] * sample_size) / 100)
         temp_dict['15_to_24'] = int((row['15_to_24'] * sample_size) / 100)
         temp_dict['25_to_64'] = int((row['25_to_64'] * sample_size) / 100)
         temp_dict['over_65'] = int((row['over_65'] * sample_size) / 100)
 
-        sample = []
-        for age_group,value in temp_dict.items():
-            sample_dict = {'person_id': [0] * value, 'age_group_name': [], 'country': []}
-            sample_dict['age_group_name'].extend(age_group * value)
-            sample_dict['country'].extend([row['country']] * value)
-            sample.append(sample_dict)
-
-
-        final_sample.append(sample)
-    return final
+        
+        for age_group, value in temp_dict.items(): 
+            
+            temp_list = [{"person_id":0, "age_group_name":age_group, "country": row['country']} for _ in range(value)]
+            sample_population = pd.concat([sample_population, pd.DataFrame(temp_list)], ignore_index=True)
+    return sample_population
 
 
 def run(countries_csv_name, countries, sample_ratio, start_date, end_date):
     sample_population = sample_creation(countries_csv_name, countries, sample_ratio)
     print(sample_population)
+
 
